@@ -91,7 +91,8 @@ public class FlowRunner extends EventHandler implements Runnable {
   // Properties map
   private Map<String, Props> sharedProps = new HashMap<String, Props>();
   private final JobTypeManager jobtypeManager;
-
+  private Props commonJobProps;
+  
   private JobRunnerEventListener listener = new JobRunnerEventListener();
   private Set<JobRunner> activeJobRunners = Collections
       .newSetFromMap(new ConcurrentHashMap<JobRunner, Boolean>());
@@ -155,6 +156,7 @@ public class FlowRunner extends EventHandler implements Runnable {
     this.projectLoader = projectLoader;
     this.execDir = new File(flow.getExecutionPath());
     this.jobtypeManager = jobtypeManager;
+    this.commonJobProps = jobtypeManager.getJobTypePluginSet().getCommonPluginJobProps();
 
     ExecutionOptions options = flow.getExecutionOptions();
     this.pipelineLevel = options.getPipelineLevel();
@@ -241,7 +243,7 @@ public class FlowRunner extends EventHandler implements Runnable {
     String flowId = flow.getFlowId();
 
     // Add a bunch of common azkaban properties
-    Props commonFlowProps = PropsUtils.addCommonFlowProperties(null, flow);
+    Props commonFlowProps = PropsUtils.addCommonFlowProperties(commonJobProps, flow);
 
     if (flow.getJobSource() != null) {
       String source = flow.getJobSource();
